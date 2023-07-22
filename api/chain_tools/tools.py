@@ -3,7 +3,7 @@ from langchain.agents.tools import Tool
 from langchain.chains.router import MultiRetrievalQAChain
 
 from langchain.llms import BaseLLM
-from .retrievers import get_retrievers
+from .retrievers import get_retrievers, get_code_retrievers
 
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
@@ -26,12 +26,12 @@ def documentation_tool(llm: BaseLLM):
     )
 
 def arcgis_code_sample(llm: BaseLLM):
-    retriever_infos = get_retrievers()
+    retriever_infos = get_code_retrievers()
     chain = MultiRetrievalQAChain.from_retrievers(llm, retriever_infos)
     return Tool(
-        name = "ArcGIS Code Sample Generator",
+        name = "ArcGIS Code Sample Helper",
         func = chain.run,
-        description="useful for when you need to generate ArcGIS code samples"
+        description="useful for when you need to generate ArcGIS code samples or ask questions about ArcGIS code samples"
     )
 
 def math_tool(llm: BaseLLM):

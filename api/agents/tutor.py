@@ -77,7 +77,7 @@ class ArcGISTutor:
         agent_kwargs = {
             "extra_prompt_messages": [MessagesPlaceholder(variable_name="memory")],
         }
-        llm_chain = LLMChain(llm = self.llm, prompt=prompt, verbose=True)
+        llm_chain = LLMChain(llm = self.model, prompt=prompt, verbose=True)
         agent = ZeroShotAgent(llm_chain=llm_chain, tools=tools, verbose=True)
         agent_chain = AgentExecutor.from_agent_and_tools(
             agent=agent, tools=tools, memory=memory, agent_kwargs=agent_kwargs
