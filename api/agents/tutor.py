@@ -1,57 +1,87 @@
-from langchain import LLMMathChain
-from langchain.chains import load_chain
-from langchain.agents.tools import Tool
-from langchain.chat_models import ChatOpenAI
-from langchain.experimental.plan_and_execute import (
-    PlanAndExecute,
-    load_agent_executor,
-    load_chat_planner,
-)
-from langchain.llms import OpenAI
+import os
+from langchain.chat_models import AzureChatOpenAI, ChatOpenAI
+# from langchain.experimental.plan_and_execute import (
+#     PlanAndExecute,
+#     load_agent_executor,
+#     load_chat_planner,
+# )
+from langchain.chains import LLMChain
+from langchain.llms import AzureOpenAI, OpenAI
+from langchain.memory.chat_message_histories import RedisChatMessageHistory
+from langchain.agents import ZeroShotAgent, AgentExecutor
+from langchain.memory import ConversationBufferWindowMemory
 
 import logging
-import pickle
-from pathlib import Path
-from typing import Optional
-from langchain.vectorstores import VectorStore
+from api.chain_tools import load_tools
+
 
 class ArcGISTutor:
-    def __init__(self):
-        self.vectorstore: VectorStore = None
-        self.__start__()
-    
-    def __start__(self, vectorstore_path: Optional[str] = "api/storage/vectorstore.pkl"):
-        logging.info("loading vectorstore")
-        if not Path(vectorstore_path).exists():
-            raise ValueError("vectorstore.pkl does not exist, please run ingest.py first")
-        with open(vectorstore_path, "rb") as f:
-            self.vectorstore = pickle.load(f)
-    
+    def __init__(self, llm_type="openai", session_id="my-session"):
+        logging.info("loading ArcGISTutor")
+        self.__set_llm__(llm_type)
+        self.redis_url = os.getenv("REDIS_URL")
+        self.session_id = session_id
+
+    def __set_llm__(self, llm_type="openai"):
+        if llm_type == "openai":
+            self.llm = OpenAI(temperature=0)
+            self.model = ChatOpenAI(temperature=0)
+        elif llm_type == "azure":
+            self.llm = AzureOpenAI(temperature=0)
+            self.model = AzureChatOpenAI(temperature=0)
+        else:
+            raise ValueError("llm_type must be 'openai' or 'azure'")
+
+    def get_prompt(self, tools):
+        tool_names = ", ".join([tool.name for tool in tools])
+        
+        prefix = """Have a conversation with a ArcGIS User, answering the following questions as best you can. You have access to the following tools:"""
+        format = f"""
+            Use the following format:
+
+            Question: the input question you must answer
+            Thought: you should always think about what to do
+            Action: the action to take, should be one of [{tool_names}]]
+            Action Input: the input to the action
+            Observation: the result of the action
+            ... (this Thought/Action/Action Input/Observation can repeat N times)
+            Thought: I now know the final answer
+            Final Answer: the final answer to the original input question
+        """
+        suffix = format + """Begin!"
+
+        {chat_history}
+        Question: {input}
+        {agent_scratchpad}"""
+
+        prompt = ZeroShotAgent.create_prompt(
+            tools,
+            prefix=prefix,
+            suffix=suffix,
+            input_variables=["input", "chat_history", "agent_scratchpad"],
+        )
+        return prompt
+
     def agent(self):
-        llm = OpenAI(temperature=0)
-        
-        llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
-        llm_vectorstore_chain = load_chain("lc://chains/vector-db-qa/stuff/chain.json", vectorstore=self.vectorstore)
-
-        tools = [
-            Tool(
-                name="ArcGIS Documentation Helper",
-                func=llm_vectorstore_chain.run,
-                description = "useful for when you need to answer questions about ArcGIS",
-            ),
-            Tool(
-                name="Calculator",
-                func=llm_math_chain.run,
-                description="useful for when you need to answer questions about math",
-            ),
-        ]
-
-        model = ChatOpenAI(temperature=0)
-        
-        planner = load_chat_planner(model)
-        executor = load_agent_executor(model, tools, verbose=True)
-        agent = PlanAndExecute(planner=planner, executor=executor, verbose=True)
-        return agent
+        tools = load_tools(self.llm)
+        message_history = RedisChatMessageHistory(
+            url=self.redis_url, ttl=600, session_id=self.session_id
+        )
+        prompt = self.get_prompt(tools)
+        memory = ConversationBufferWindowMemory(k=5, return_messages=True, chat_memory=message_history)
+        llm_chain = LLMChain(llm = self.llm, prompt=prompt, verbose=True)
+        agent = ZeroShotAgent(llm_chain=llm_chain, tools=tools, verbose=True)
+        agent_chain = AgentExecutor.from_agent_and_tools(
+            agent=agent, tools=tools, memory=memory
+        )
+        # agent_chain = PlanAndExecute(
+        #     planner=planner,
+        #     executor=executor,
+        #     verbose=True,
+        #     prompt=self.prompts(),
+        #     memory=memory,
+        # )
+        return agent_chain
 
 
 tutor = ArcGISTutor()

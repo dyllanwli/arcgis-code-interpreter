@@ -1,0 +1,1 @@
+https://developers.arcgis.com/documentation/mapping-apis-and-services/maps/services/basemap-layer-service/

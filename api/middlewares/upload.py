@@ -1,6 +1,6 @@
 from starlette.responses import JSONResponse
 import threading
-from utils import delete_file
+from api.utils import delete_file
 from fastapi import UploadFile, File
 
 async def upload(file: UploadFile = File(...)):
