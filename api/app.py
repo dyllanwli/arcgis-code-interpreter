@@ -9,7 +9,8 @@ from api.middlewares import upload
 
 app: FastAPI = create_service(
     "api.agents.tutor:agent",
-    auth_token="funkyfamily"
+    "api.agents.example:conversation",
+    # auth_token="funkyfamily"
 )
 
 @app.post("/api/upload")

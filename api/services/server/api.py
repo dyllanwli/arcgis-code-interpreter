@@ -61,11 +61,13 @@ def authenticate_or_401(auth_token):
     return verify_auth
 
 
-def derive_fields(language_app) -> (list[str], list[str]):
+def derive_fields(language_app):
     if hasattr(language_app, "input_variables"):
         return language_app.input_variables, language_app.output_variables
     elif hasattr(language_app, "prompt"):
         return language_app.prompt.input_variables, [language_app.output_key]
+    elif hasattr(language_app, "input_keys"):
+        return language_app.input_keys, language_app.output_keys
     return [language_app.input_key], ["output"]
 
 
