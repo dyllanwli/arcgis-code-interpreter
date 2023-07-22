@@ -13,3 +13,5 @@ unstructured
 libmagic
 langchain-serve
 redis
+tiktoken
+loguru
