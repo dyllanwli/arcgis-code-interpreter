@@ -18,7 +18,7 @@ from api.chain_tools import load_tools
 
 
 class ArcGISTutor:
-    def __init__(self, llm_type="openai", session_id="my-session001"):
+    def __init__(self, llm_type="openai", session_id="my-session"):
         logging.info("loading ArcGISTutor")
         self.__set_llm__(llm_type)
         self.redis_url = os.getenv("REDIS_URL")
@@ -37,20 +37,11 @@ class ArcGISTutor:
     def get_prompt(self, tools):
         tool_names = ", ".join([tool.name for tool in tools])
         
-        prefix = """Have a conversation with a human, answering the following questions as best you can. You have access to the following tools:"""
-        format = f"""
-            Use the following format:            
-
-            Question: the input question you must answer
-            Thought: you should always think about what to do
-            Action: the action to take, should be one of [{tool_names}]]
-            Action Input: the input to the action
-            Observation: the result of the action
-            ... (this Thought/Action/Action Input/Observation can repeat at most 10 times)
-            Thought: I now know the final answer
-            Final Answer: the final answer to the original input question
-        """
-        # prefix += format
+        prefix = """Have a conversation with a human, answering the following questions as best you can. Here are some tips:
+        1. No need to wait for user's response.
+        2. No need to repeat a single tool more than twice.
+        3. Must Return with the "Final Answer:" once you are done with the conversation.
+        4. You have access to the following tools:"""
         suffix = """Begin!"
 
         {memory}
@@ -70,7 +61,7 @@ class ArcGISTutor:
             url=self.redis_url, ttl=600, session_id=self.session_id
         )
         memory = ConversationBufferWindowMemory(k=5, return_messages=True, 
-                                                chat_memory=message_history, 
+                                                # chat_memory=message_history, 
                                                 memory_key="memory")
         tools = load_tools(self.llm, memory)
         prompt = self.get_prompt(tools)
