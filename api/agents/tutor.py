@@ -18,7 +18,7 @@ from api.chain_tools import load_tools
 
 
 class ArcGISTutor:
-    def __init__(self, llm_type="openai", session_id="my-session"):
+    def __init__(self, llm_type="openai", session_id="my-session001"):
         logging.info("loading ArcGISTutor")
         self.__set_llm__(llm_type)
         self.redis_url = os.getenv("REDIS_URL")
