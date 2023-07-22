@@ -5,7 +5,6 @@ def load_tools(llm, memory=None):
         documentation_tool(llm),
         math_tool(llm),
         general_assitant(llm, memory=memory),
-        arcgis_code_sample(llm)
     ]
     
     

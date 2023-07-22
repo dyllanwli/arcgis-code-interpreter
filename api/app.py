@@ -9,7 +9,7 @@ from api.middlewares import upload
 
 app: FastAPI = create_service(
     "api.agents.tutor:agent",
-    "api.agents.example:conversation",
+    # "api.agents.example:conversation",
     # auth_token="funkyfamily"
 )
 

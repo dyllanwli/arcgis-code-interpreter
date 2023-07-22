@@ -8,5 +8,10 @@
         "name": "ArcGIS Rest API Documentation",
         "description": "Good for answering questions about the ArcGIS Rest API",
         "retriever": "api/storage/arcgis_rest_api.pkl"
+    },
+    {
+        "name": "Esri/ArcGIS Leaflet Documentation",
+        "description": "Good for answering questions about the Esri/ArcGIS Leaflet",
+        "retriever": "api/storage/esri_leaflet.pkl"
     }
 ]

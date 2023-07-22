@@ -72,7 +72,7 @@ def ingest_resources(resources_list: list):
     code_resources_path = "./code_resources"
     code_resource_output_file_prefix = "../api/storage/code-"
     
-    if "code" in resources_list:
+    if "docs" in resources_list:
         for file in os.listdir(resources_path):
             if file.endswith(".txt"):
                 print("Ingesting {}".format(file))
@@ -81,7 +81,7 @@ def ingest_resources(resources_list: list):
                 print("Output path: {}".format(output_path))
                 ingest_docs(documents_path, output_path)
     
-    if "docs" in resources_list:
+    if "code" in resources_list:
         for repo in os.listdir(code_resources_path):
             repo_path = os.path.join(code_resources_path, repo)
             if os.path.isdir(repo_path):
@@ -98,6 +98,6 @@ print("Running on API_BASE:", os.getenv("OPENAI_API_BASE"))
 
 if __name__ == "__main__":
     ingest_resources([
-        "code",
+        # "code",
         "docs"
     ])
