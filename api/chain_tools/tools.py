@@ -52,6 +52,7 @@ def arcgis_code_sample(llm: BaseLLM):
 
 def shapefile_analysis(llm: BaseLLM):
     def chain_func(input):
+        print("loading shapefile")
         pandas_ai = PandasAI(llm)
         df = gpd.read_file('cache/shapefile.zip').drop(columns='geometry')
         return pandas_ai(df, prompt=input)

@@ -24,7 +24,7 @@ class ArcGISTutor:
         logging.info("loading ArcGISTutor")
         self.__set_llm__(llm_type)
         self.redis_url = os.getenv("REDIS_URL")
-        # self.session_id = datetime.now().strftime("%Y-%m-%d-%H")
+        self.session_id = datetime.now().strftime("%Y-%m-%d-%H")
 
 
     def __set_llm__(self, llm_type="openai"):
@@ -60,11 +60,11 @@ class ArcGISTutor:
         return prompt
 
     def agent(self):
-        # message_history = RedisChatMessageHistory(
-        #     url=self.redis_url, ttl=600, session_id=self.session_id
-        # )
+        message_history = RedisChatMessageHistory(
+            url=self.redis_url, ttl=600, session_id=self.session_id
+        )
         memory = ConversationBufferWindowMemory(k=20, return_messages=True, 
-                                                # chat_memory=message_history, 
+                                                chat_memory=message_history, 
                                                 memory_key="memory")
         tools = load_tools(self.llm, memory)
         prompt = self.get_prompt(tools)
