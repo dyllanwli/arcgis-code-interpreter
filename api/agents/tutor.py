@@ -14,7 +14,9 @@ from langchain.agents import ZeroShotAgent, AgentExecutor
 from langchain.memory import ConversationBufferWindowMemory
 
 import logging
+from datetime import datetime
 from api.chain_tools import load_tools
+
 
 
 class ArcGISTutor:
@@ -22,7 +24,8 @@ class ArcGISTutor:
         logging.info("loading ArcGISTutor")
         self.__set_llm__(llm_type)
         self.redis_url = os.getenv("REDIS_URL")
-        self.session_id = session_id
+        # self.session_id = datetime.now().strftime("%Y-%m-%d-%H")
+
 
     def __set_llm__(self, llm_type="openai"):
         if llm_type == "openai":
@@ -57,10 +60,10 @@ class ArcGISTutor:
         return prompt
 
     def agent(self):
-        message_history = RedisChatMessageHistory(
-            url=self.redis_url, ttl=600, session_id=self.session_id
-        )
-        memory = ConversationBufferWindowMemory(k=5, return_messages=True, 
+        # message_history = RedisChatMessageHistory(
+        #     url=self.redis_url, ttl=600, session_id=self.session_id
+        # )
+        memory = ConversationBufferWindowMemory(k=20, return_messages=True, 
                                                 # chat_memory=message_history, 
                                                 memory_key="memory")
         tools = load_tools(self.llm, memory)
@@ -86,7 +89,7 @@ class ArcGISTutor:
 tutor = ArcGISTutor()
 agent = tutor.agent()
 
-logging.info("ArcGISTutor loaded")
+print("ArcGISTutor loaded")
 # agent.run(
 #     input="Hi I am Bob"
     

@@ -5,11 +5,11 @@ def get_retrievers(prompt):
     retrivers = []
     with open('api/retrievers.json', 'r') as f:
         retrivers = json.load(f)
-        
         for config in retrivers:
             retriver = load_vectorstore(config["retriever"])
             config["retriever"] = retriver.as_retriever()
             config["prompt"] = prompt
+    print("retrievers loaded")
     return retrivers
 
 def get_code_retrievers():

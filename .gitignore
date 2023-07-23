@@ -1,5 +1,4 @@
-# vectorstore
-*.pkl
+
 cache/*.zip
 cache/*.db
 

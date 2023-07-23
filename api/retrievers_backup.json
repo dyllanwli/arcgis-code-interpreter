@@ -1,0 +1,42 @@
+[
+  {
+    "name": "APIs, Tools, and Location Services Documentation",
+    "description": "Good for answering general questions about ArcGIS APIs, Tools, and Location Services",
+    "retriever": "api/storage/arcgis_api_tools_location.pkl"
+  },
+  {
+    "name": "ArcGIS Pro Documentation",
+    "description": "Good for answering questions about the ArcGIS Pro",
+    "retriever": "api/storage/arcgis_pro.pkl"
+  },
+  {
+    "name": "ArcGIS Online Documentation",
+    "description": "Good for answering questions about the ArcGIS Online",
+    "retriever": "api/storage/arcgis_online.pkl"
+  },
+  {
+    "name": "ArcGIS Indoor Documentation",
+    "description": "Good for answering questions about the ArcGIS Indoor",
+    "retriever": "api/storage/arcgis_indoor.pkl"
+  },
+  {
+    "name": "ArcGIS API for Python Documentation ",
+    "description": "Good for answering questions about the ArcGIS API for Python",
+    "retriever": "api/storage/arcgis_python_api.pkl"
+  },
+  {
+    "name": "ArcGIS Maps SDK for Java Documentation",
+    "description": "Good for answering questions about the ArcGIS API for Java",
+    "retriever": "api/storage/arcgis_map_sdk_java.pkl"
+  },
+  {
+    "name": "ArcGIS Rest API Documentation",
+    "description": "Good for answering questions about the ArcGIS Rest API",
+    "retriever": "api/storage/arcgis_rest_api.pkl"
+  },
+  {
+    "name": "Esri/ArcGIS Leaflet Documentation",
+    "description": "Good for answering questions about the Esri/ArcGIS Leaflet",
+    "retriever": "api/storage/esri_leaflet.pkl"
+  }
+]
