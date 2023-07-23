@@ -1,4 +1,3 @@
-from langchain.chains import LLMMathChain
 from langchain.agents.tools import Tool
 from langchain.chains.router import MultiRetrievalQAChain
 
@@ -13,6 +12,8 @@ from langchain.prompts import (
     MessagesPlaceholder,
     SystemMessagePromptTemplate,
 )
+from pandasai import PandasAI
+import geopandas as gpd
 
 # llm = OpenAI(temperature=0)
 
@@ -49,12 +50,16 @@ def arcgis_code_sample(llm: BaseLLM):
         description="useful for when you need to generate ArcGIS code samples or ask questions about ArcGIS code samples"
     )
 
-def math_tool(llm: BaseLLM):
-    chain = LLMMathChain.from_llm(llm=llm, verbose=True)
+def shapefile_analysis(llm: BaseLLM):
+    def chain_func(input):
+        pandas_ai = PandasAI(llm)
+        df = gpd.read_file('cache/shapefile.zip').drop(columns='geometry')
+        return pandas_ai(df, prompt=input)
+    
     return Tool(
-        name="Calculator",
-        func=chain.run,
-        description="useful for when you need to answer questions about math"
+        name="Shapefile Analysis",
+        func=chain_func,
+        description="useful for when you need to answer questions about shapefile that just uploaded"
     )
     
 def general_assitant(llm: BaseLLM, memory=None):
