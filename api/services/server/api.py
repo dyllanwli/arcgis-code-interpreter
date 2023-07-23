@@ -4,6 +4,8 @@ from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.security.utils import get_authorization_scheme_param
+from fastapi.middleware.cors import CORSMiddleware
+
 from langchain.schema import messages_from_dict, messages_to_dict
 from loguru import logger
 from pydantic import BaseModel
@@ -129,6 +131,15 @@ def create_service(*lc_apps, auth_token: str = "", app: FastAPI = None):
     sys.path.append(os.path.dirname("."))
     logger.info("Creating service")
     app = app or FastAPI()
+    origins = ["*"]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     endpoints = ["/docs"]
 
     _authenticate_or_401 = Depends(authenticate_or_401(auth_token=auth_token))

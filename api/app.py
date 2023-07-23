@@ -14,6 +14,10 @@ app: FastAPI = create_service(
     # auth_token="funkyfamily"
 )
 
+@app.post("/api/test")
+def test():
+    return {"message": "Hello World"}
+
 @app.post("/api/upload")
 async def upload_file(file: UploadFile = File(...)):
     return await upload(file)
