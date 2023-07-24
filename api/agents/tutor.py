@@ -24,7 +24,8 @@ class ArcGISTutor:
         logging.info("loading ArcGISTutor")
         self.__set_llm__(llm_type)
         self.redis_url = os.getenv("REDIS_URL")
-        self.session_id = datetime.now().strftime("%Y-%m-%d-%H")
+        self.session_id = session_id
+
 
 
     def __set_llm__(self, llm_type="openai"):
